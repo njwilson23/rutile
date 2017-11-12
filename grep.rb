@@ -3,10 +3,19 @@
 require 'optparse'
 
 def filter(content, pattern, options)
-    # TODO: implement options
+    if not options[:case_senstive]
+        pattern = pattern.downcase
+        def preproc(line)
+            line.downcase
+        end
+    else
+        def preproc(line)
+            line
+        end
+    end
     pattern_regex = Regexp.new(pattern)
     content.select { |line|
-        pattern_regex.match(line) != nil
+        (pattern_regex.match(preproc(line)) != nil) ^ options[:invert]
     }
 end
 
@@ -14,7 +23,7 @@ end
 options = {
     :invert => false,
     :case_senstive => true,
-    :fancy_regex => false
+    :fancy_regex => false       # TODO: implement this
 }
 
 OptionParser.new do |opts|
